@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SintaxIA — Curadoria de IA & Prompts para o Setor Jurídico e Público</title>
+  
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Arquivo de Estilos Customizados -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-['Plus_Jakarta_Sans'] antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <i class="fa-solid fa-scale-balanced text-white text-lg"></i>
+          </div>
+          <div>
+            <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">Sintax<span class="text-indigo-400">IA</span></span>
+            <span class="hidden sm:inline-block text-xs text-indigo-300/70 border border-indigo-500/20 rounded-full px-2 py-0.5 ml-2 bg-indigo-500/10">Jurídico & Público</span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
+          <button data-tab="tools" class="nav-tab active-tab">
+            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Ferramentas IA
+          </button>
+          <button data-tab="prompts" class="nav-tab">
+            <i class="fa-solid fa-terminal text-xs"></i> Biblioteca de Prompts
+          </button>
+          <button data-tab="submit" class="nav-tab">
+            <i class="fa-solid fa-circle-plus text-xs"></i> Enviar Colaboração
+          </button>
+          <button data-tab="saved" class="nav-tab">
+            <i class="fa-solid fa-bookmark text-xs"></i> Meus Salvos
+          </button>
+        </nav>
+
+        <!-- Stats Counter & Actions -->
+        <div class="flex items-center gap-3">
+          <div class="hidden lg:flex items-center gap-4 text-xs text-slate-400 border-r border-slate-800 pr-4">
+            <div><span id="stat-tools-count" class="font-semibold text-white">0</span> Ferramentas</div>
+            <div><span id="stat-prompts-count" class="font-semibold text-white">0</span> Prompts</div>
+          </div>
+          <button data-tab="submit" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-all shadow-md shadow-indigo-600/20">
+            <i class="fa-solid fa-plus text-xs"></i> Colaborar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden py-12 md:py-16 border-b border-slate-800/60 bg-gradient-to-b from-indigo-950/20 via-slate-950 to-slate-950">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.08),transparent_50%)]"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-4">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Conformidade com Lei nº 14.133/2021 & LGPD
+        </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+          Curadoria de Inteligência Artificial para <span class="bg-gradient-to-r from-indigo-400 via-sky-300 to-teal-300 bg-clip-text text-transparent">Direito e Gestão Pública</span>
+        </h1>
+        <p class="text-slate-400 text-base md:text-lg leading-relaxed mb-6">
+          Encontre ferramentas testadas, prompts validados e modelos práticos para minutas de contratos, ETPs, instrução processual, jurisprudência e atendimento ao cidadão.
+        </p>
+
+        <!-- Dynamic Category Pills -->
+        <div class="flex flex-wrap gap-2 pt-2" id="quick-category-pills"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main App View Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- View: Tools -->
+    <div id="view-tools" class="app-view">
+      
+      <!-- Search & Filters Toolbar -->
+      <div class="flex flex-col md:flex-row gap-4 mb-8 justify-between items-stretch md:items-center bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+          <input type="text" id="tool-search-input" placeholder="Buscar por ferramenta, uso (ex: ETP, contrato) ou recurso..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition" />
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="tool-category-filter" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs md:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition">
+            <option value="ALL">Todas as Categorias</option>
+          </select>
+          
+          <select id="tool-pricing-filter" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs md:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition">
+            <option value="ALL">Todos os Preços</option>
+            <option value="Gratuito">Gratuito</option>
+            <option value="Freemium">Freemium</option>
+            <option value="Pago">Pago</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tools Grid -->
+      <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="tools-empty-state" class="hidden text-center py-16 text-slate-500">
+        <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-600"></i>
+        <p class="text-base font-medium">Nenhuma ferramenta encontrada para estes filtros.</p>
+      </div>
+    </div>
+
+    <!-- View: Prompts -->
+    <div id="view-prompts" class="app-view hidden">
+      
+      <!-- Prompts Toolbar -->
+      <div class="flex flex-col md:flex-row gap-4 mb-8 justify-between items-stretch md:items-center bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+          <input type="text" id="prompt-search-input" placeholder="Buscar modelos de prompts..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition" />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <select id="prompt-category-filter" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs md:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition">
+            <option value="ALL">Todos os Casos de Uso</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Prompts Grid -->
+      <div id="prompts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
+
+    <!-- View: Submit Form -->
+    <div id="view-submit" class="app-view hidden max-w-3xl mx-auto">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 md:p-8">
+        <h2 class="text-2xl font-bold text-white mb-2">Enviar Colaboração para a Comunidade</h2>
+        <p class="text-slate-400 text-sm mb-6">Sua contribuição passa por curadoria e fica disponível para advogados e servidores de todo o país.</p>
+
+        <!-- Sub-tabs for Submission Type -->
+        <div class="flex border-b border-slate-800 mb-6">
+          <button id="form-type-prompt" class="px-4 py-2 text-sm font-medium text-indigo-400 border-b-2 border-indigo-500 transition">Novo Prompt</button>
+          <button id="form-type-tool" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 transition">Nova Ferramenta IA</button>
+        </div>
+
+        <!-- Form: Prompt -->
+        <form id="submit-prompt-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Título do Prompt *</label>
+            <input type="text" id="prompt-title" required placeholder="Ex: Minuta de ETP para Contratação de Software" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Caso de Uso *</label>
+              <select id="prompt-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                <!-- Injetado via JS -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">LLM Recomendado</label>
+              <input type="text" id="prompt-llm" placeholder="Ex: Claude 3.5, ChatGPT, NotebookLM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Texto do Prompt *</label>
+            <textarea id="prompt-content" required rows="6" placeholder="Escreva o prompt em detalhes. Dica: Coloque parâmetros editáveis entre colchetes como [Inserir Objeto]." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm font-mono text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Seu Nome / Cargo (Créditos)</label>
+            <input type="text" id="prompt-author" placeholder="Ex: Dr. Carlos M. / Servidor Público" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition shadow-lg shadow-indigo-600/20">
+            Publicar Prompt
+          </button>
+        </form>
+
+        <!-- Form: Tool (Oculto por padrão) -->
+        <form id="submit-tool-form" class="space-y-4 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nome da Ferramenta *</label>
+              <input type="text" id="tool-name" required placeholder="Ex: Casetext" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Link Oficial *</label>
+              <input type="url" id="tool-url" required placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Categoria *</label>
+              <select id="tool-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Preço *</label>
+              <select id="tool-pricing" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                <option value="Gratuito">Gratuito</option>
+                <option value="Freemium">Freemium</option>
+                <option value="Pago">Pago</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Resumo / Veredito *</label>
+            <textarea id="tool-desc" required rows="3" placeholder="Descrição prática de como esta ferramenta auxilia no fluxo jurídico ou público." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition shadow-lg shadow-indigo-600/20">
+            Cadastrar Ferramenta
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- View: Saved Items -->
+    <div id="view-saved" class="app-view hidden">
+      <h2 class="text-xl font-bold text-white mb-6">Itens Marcados como Salvos</h2>
+      <div id="saved-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="saved-empty-state" class="hidden text-center py-16 text-slate-500">
+        <i class="fa-regular fa-bookmark text-4xl mb-3 text-slate-600"></i>
+        <p class="text-base font-medium">Você ainda não salvou nenhuma ferramenta ou prompt.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal Detalhes da Ferramenta -->
+  <div id="tool-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button id="close-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
+
+  <!-- Script Principal JS -->
+  <script src="app.js"></script>
+</body>
+</html>
