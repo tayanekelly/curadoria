@@ -1,0 +1,64 @@
+/* Extensões CSS personalizadas para SintaxIA */
+
+/* Transições suaves entre abas */
+.nav-tab {
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+  display: flex;
+  items-center: center;
+  gap: 0.5rem;
+}
+
+.nav-tab:hover {
+  color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-tab.active-tab {
+  color: #ffffff;
+  background-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+/* Destaque dinâmico de variáveis ​​em prompts */
+.prompt-var {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+  border: 1px dashed rgba(99, 102, 241, 0.4);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
+/* Barra de rolagem personalizada para código/instruções */
+pre::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Utilitários de animação */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.app-view:not(.hidden) {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
