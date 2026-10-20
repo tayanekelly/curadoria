@@ -12,7 +12,8 @@ const STATE = {
     { id: 'linguagem_simples', name: 'Linguagem Simples & Atendimento', icon: 'fa-comments', tag: '#LinguagemSimples' }
   ],
 
-  tools: [
+ tools: [
+    // --- RESUMO & ANÁLISE DE PROCESSOS ---
     {
       id: 't1',
       name: 'NotebookLM',
@@ -23,6 +24,8 @@ const STATE = {
       url: 'https://notebooklm.google.com',
       badge: 'Destaque Setor Público'
     },
+
+    // --- PESQUISA & PRECEDENTES ---
     {
       id: 't2',
       name: 'Casetext (CoCounsel)',
@@ -34,6 +37,17 @@ const STATE = {
       badge: 'Popular Jurídico'
     },
     {
+      id: 't4',
+      name: 'Jusbrasil IA',
+      category: 'pesquisa_precedentes',
+      pricing: 'Freemium',
+      compliance: ['Tribunais Brasileiros'],
+      desc: 'Busca inteligente integrada à maior base de julgados, doutrinas e Diários Oficiais do Brasil.',
+      url: 'https://jusbrasil.com.br'
+    },
+
+    // --- COMPRAS PÚBLICAS & LICITAÇÕES ---
+    {
       id: 't3',
       name: 'Claude 3.5 Sonnet',
       category: 'compras_publicas',
@@ -43,14 +57,101 @@ const STATE = {
       url: 'https://claude.ai',
       badge: 'Recomendado'
     },
+
+    // -------------------------------------------------------------
+    // NOVAS FERRAMENTAS: MINUTAS & REDAÇÃO DE CONTRATOS
+    // -------------------------------------------------------------
     {
-      id: 't4',
-      name: 'Jusbrasil IA',
-      category: 'pesquisa_precedentes',
+      id: 't5',
+      name: 'Spellbook',
+      category: 'minutas_contratos',
+      pricing: 'Pago',
+      compliance: ['Integração com MS Word', 'Análise de Riscos'],
+      desc: 'Funciona diretamente dentro do Microsoft Word para sugerir cláusulas, identificar riscos e redigir minutas contratuais em segundos.',
+      url: 'https://www.spellbook.legal',
+      badge: 'Essencial para Word'
+    },
+    {
+      id: 't6',
+      name: 'Harvey AI',
+      category: 'minutas_contratos',
+      pricing: 'Pago',
+      compliance: ['Privacidade Corporativa', 'Modelos Avançados'],
+      desc: 'IA jurídica de nível empresarial especializada em análise complexa de contratos, Due Diligence e elaboração de teses e minutas.',
+      url: 'https://www.harvey.ai'
+    },
+    {
+      id: 't7',
+      name: 'LegalRobot',
+      category: 'minutas_contratos',
       pricing: 'Freemium',
-      compliance: ['Tribunais Brasileiros'],
-      desc: 'Busca inteligente integrada à maior base de julgados, doutrinas e Diários Oficiais do Brasil.',
-      url: 'https://jusbrasil.com.br'
+      compliance: ['Benchmarking Contratual'],
+      desc: 'Analisa e pontua a clareza de contratos e minutas, identificando ambiguidades, obrigações ocultas e inconsistências de termos.',
+      url: 'https://legalrobot.com'
+    },
+
+    // -------------------------------------------------------------
+    // NOVAS FERRAMENTAS: TRANSCRIÇÃO & ATAS DE REUNIÃO
+    // -------------------------------------------------------------
+    {
+      id: 't8',
+      name: 'tl;dv',
+      category: 'transcricao_atas',
+      pricing: 'Freemium',
+      compliance: ['Suporte a PT-BR', 'Integração Zoom/Teams/Meet'],
+      desc: 'Grava e transcreve reuniões, audiências e sessões deliberativas, gerando sumários automáticos com timestamp dos principais oradores.',
+      url: 'https://tldv.io',
+      badge: 'Muito Popular'
+    },
+    {
+      id: 't9',
+      name: 'Tactiq',
+      category: 'transcricao_atas',
+      pricing: 'Freemium',
+      compliance: ['Transcrição em Tempo Real'],
+      desc: 'Extensão para navegadores que captura a transcrição ao vivo no Google Meet ou Teams e gera a ata resumida com decisões tomadas.',
+      url: 'https://tactiq.io'
+    },
+    {
+      id: 't10',
+      name: 'Otter.ai',
+      category: 'transcricao_atas',
+      pricing: 'Freemium',
+      compliance: ['Geração de Atas'],
+      desc: 'Assistente de reuniões que transcreve áudios e vídeos, extrai pontos de ação e cria notas estruturadas para comissões e equipes.',
+      url: 'https://otter.ai'
+    },
+
+    // -------------------------------------------------------------
+    // NOVAS FERRAMENTAS: LINGUAGEM SIMPLES & ATENDIMENTO
+    // -------------------------------------------------------------
+    {
+      id: 't11',
+      name: 'Notion AI',
+      category: 'linguagem_simples',
+      pricing: 'Pago',
+      compliance: ['Edição de Texto', 'Reescrita Acessível'],
+      desc: 'Excelente para reescrever pareceres, despachos e informativos técnicos em tom direto e acessível ao cidadão ou cliente.',
+      url: 'https://www.notion.so/product/ai'
+    },
+    {
+      id: 't12',
+      name: 'ChatGPT (Custom GPTs)',
+      category: 'linguagem_simples',
+      pricing: 'Freemium',
+      compliance: ['Assistentes de Atendimento'],
+      desc: 'Permite criar robôs de atendimento personalizados com FAQs institucionais para traduzir o "juridiquês" em Linguagem Simples.',
+      url: 'https://chatgpt.com',
+      badge: 'Versátil'
+    },
+    {
+      id: 't13',
+      name: 'ChatDOC',
+      category: 'linguagem_simples',
+      pricing: 'Freemium',
+      compliance: ['Extração de Tabelas e PDFs'],
+      desc: 'Analisa documentos técnicos e regulatórios e responde perguntas sobre eles em linguagem clara, direto com citações do texto fonte.',
+      url: 'https://chatdoc.com'
     }
   ],
 
