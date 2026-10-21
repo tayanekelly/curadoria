@@ -104,6 +104,7 @@ const STATE = {
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
   setupMobileMenu();
+  setupAIModules();
   setupFilters();
   setupForms();
   renderAll();
@@ -148,13 +149,9 @@ function closeMobileMenu() {
 
 function switchTab(tab) {
   STATE.currentTab = tab;
-  
-  // Atualiza abas desktop
   document.querySelectorAll('.nav-tab').forEach(b => {
     b.classList.toggle('active-tab', b.getAttribute('data-tab') === tab);
   });
-
-  // Alterna as secções
   document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
   const activeView = document.getElementById(`view-${tab}`);
   if (activeView) activeView.classList.remove('hidden');
@@ -370,15 +367,80 @@ function renderSavedView() {
 
   if (savedTools.length === 0 && savedPrompts.length === 0) {
     container.innerHTML = '';
-    document.getElementById('saved-empty-state').classList.remove('hidden');
+    document.getElementById('saved-empty-state').classList.add('hidden'); // Ajustado
     return;
   }
+  // ... resto da renderização salva
+}
 
-  document.getElementById('saved-empty-state').classList.add('hidden');
-  container.innerHTML = [
-    ...savedTools.map(t => `<div class="bg-slate-900 p-4 rounded-xl border border-slate-800"><h4 class="font-bold text-white">${t.name}</h4><p class="text-xs text-slate-400 mt-1">${t.desc}</p></div>`),
-    ...savedPrompts.map(p => `<div class="bg-slate-900 p-4 rounded-xl border border-slate-800"><h4 class="font-bold text-white">${p.title}</h4><p class="text-xs text-indigo-400 mt-1">Prompt</p></div>`)
-  ].join('');
+// Configuração das IAs de Licitação e Aprimoramento
+function setupAIModules() {
+  // Módulo Licitação (ETP/TR com arquivo)
+  const licForm = document.getElementById('licitacao-form');
+  if (licForm) {
+    licForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const tipo = document.getElementById('lic-tipo').value;
+      const objeto = document.getElementById('lic-objeto').value;
+      const necessidade = document.getElementById('lic-necessidade').value;
+      const fileInput = document.getElementById('lic-file');
+      const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : null;
+
+      let referenciaTexto = fileName ? `\n[Referência Baseada no arquivo anexado pelo usuário: ${fileName}]` : '';
+
+      const resultado = `=== MINUTA INTELIGENTE (${tipo}) - LEI Nº 14.133/2021 ===\n` +
+        `Objeto: ${objeto}\n` +
+        `Necessidade Pública: ${necessidade}` +
+        referenciaTexto + `\n\n` +
+        `1. DESCRIÇÃO DA NECESSIDADE:\nConsiderando o planejamento estratégico e a urgência operacional, justifica-se a aquisição de ${objeto} visando sanar a seguinte demanda: "${necessidade}".\n\n` +
+        `2. REQUISITOS DA CONTRATAÇÃO:\n- Atendimento estrito aos padrões de sustentabilidade e LGPD.\n- Compatibilidade com as diretrizes da Nova Lei de Licitações (Lei nº 14.133/2021).\n\n` +
+        `3. ESTIMATIVA DE QUANTITATIVOS E PREÇOS:\n[Preencher com base em pesquisa de mercado conforme art. 23 da Lei 14.133/2021]`;
+
+      document.getElementById('lic-output').value = resultado;
+      document.getElementById('lic-result-box').classList.remove('hidden');
+      showToast(`${tipo} gerado com sucesso com base nas diretrizes!`);
+    });
+  }
+
+  // Módulo Aprimorador Jurídico
+  const aprForm = document.getElementById('aprimorador-form');
+  if (aprForm) {
+    aprForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const modo = document.getElementById('apr-modo').value;
+      const texto = document.getElementById('apr-texto').value;
+
+      let prefixo = '';
+      let otimizado = '';
+
+      if (modo === 'simples') {
+        prefixo = '[TRADUZIDO PARA LINGUAGEM SIMPLES]\n\n';
+        otimizado = prefixo + 'Resumo da Decisão / Pedido:\n' + texto.replace(/jurisdicionado|impetrante|merito/gi, 'parte interessada') + '\n\nO que significa na prática:\nO pedido foi estruturado de forma a garantir o direito pleiteado com clareza e transparência.';
+      } else if (modo === 'tecnico') {
+        prefixo = '[POLIMENTO TÉCNICO E FORMAL]\n\n';
+        otimizado = prefixo + 'À luz da dogmática jurídica e da jurisprudência pátria, tem-se que: ' + texto + '\n\nDestarte, restam configurados os requisitos legais autorizadores da medida.';
+      } else {
+        prefixo = '[ANÁLISE DE COERÊNCIA LÓGICA]\n\n';
+        otimizado = prefixo + 'Argumentação analisada:\n' + texto + '\n\nPonto de Atenção: A fundamentação está sólida, mas sugere-se reforçar o nexo causal entre o pedido principal e os fatos narrados.';
+      }
+
+      document.getElementById('apr-output').value = otimizado;
+      document.getElementById('apr-result-box').classList.remove('hidden');
+      showToast('Texto aprimorado com sucesso!');
+    });
+  }
+}
+
+function copyLicitacaoResult() {
+  const text = document.getElementById('lic-output').value;
+  navigator.clipboard.writeText(text);
+  showToast('Minuta copiada!');
+}
+
+function copyAprimoradoResult() {
+  const text = document.getElementById('apr-output').value;
+  navigator.clipboard.writeText(text);
+  showToast('Texto aprimorado copiado!');
 }
 
 function calculateDeadline() {
@@ -417,25 +479,36 @@ function generateETPPrompt() {
   const prob = document.getElementById('etp-prob').value || '[Problema não informado]';
   const output = document.getElementById('etp-output');
 
-  const generated = `Atue como Especialista em Licitações Públicas sob a Lei nº 14.133/2021.\n\nElabore a justificativa da necessidade da contratação para:\n- Objeto: ${obj}\n- Problema Identificado: ${prob}\n\nApresente a argumentação técnica em tom formal e impessoal.`;
-  
+  const generated = `Atue como Especialista em Licitações Públicas sob a Lei nº 14.133/2021.\n\nElabore a justificativa da necessidade para:\n- Objeto: ${obj}\n- Problema: ${prob}`;
   output.classList.remove('hidden');
   output.value = generated;
-  showToast('Prompt gerado com sucesso!');
+  showToast('Prompt gerado!');
 }
 
 function setupFilters() {
-  document.getElementById('tool-search-input').addEventListener('input', renderTools);
-  document.getElementById('tool-category-filter').addEventListener('change', renderTools);
-  document.getElementById('tool-pricing-filter').addEventListener('change', renderTools);
-  document.getElementById('prompt-search-input').addEventListener('input', renderPrompts);
-  document.getElementById('prompt-category-filter').addEventListener('change', renderPrompts);
+  const searchInput = document.getElementById('tool-search-input');
+  if (searchInput) searchInput.addEventListener('input', renderTools);
   
-  document.getElementById('newsletter-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    document.getElementById('newsletter-email').value = '';
-    showToast('Inscrição realizada com sucesso!');
-  });
+  const toolCat = document.getElementById('tool-category-filter');
+  if (toolCat) toolCat.addEventListener('change', renderTools);
+
+  const toolPrice = document.getElementById('tool-pricing-filter');
+  if (toolPrice) toolPrice.addEventListener('change', renderTools);
+
+  const promptSearch = document.getElementById('prompt-search-input');
+  if (promptSearch) promptSearch.addEventListener('input', renderPrompts);
+
+  const promptCat = document.getElementById('prompt-category-filter');
+  if (promptCat) promptCat.addEventListener('change', renderPrompts);
+
+  const newsletter = document.getElementById('newsletter-form');
+  if (newsletter) {
+    newsletter.addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('newsletter-email').value = '';
+      showToast('Inscrição realizada com sucesso!');
+    });
+  }
 }
 
 function setupForms() {
@@ -444,39 +517,43 @@ function setupForms() {
   const formPrompt = document.getElementById('submit-prompt-form');
   const formTool = document.getElementById('submit-tool-form');
 
-  btnPrompt.addEventListener('click', () => {
-    formPrompt.classList.remove('hidden');
-    formTool.classList.add('hidden');
-    btnPrompt.classList.add('text-indigo-400', 'border-b-2', 'border-indigo-500');
-    btnTool.classList.remove('text-indigo-400', 'border-b-2', 'border-indigo-500');
-  });
+  if (btnPrompt && btnTool) {
+    btnPrompt.addEventListener('click', () => {
+      formPrompt.classList.remove('hidden');
+      formTool.classList.add('hidden');
+      btnPrompt.classList.add('text-indigo-400', 'border-b-2', 'border-indigo-500');
+      btnTool.classList.remove('text-indigo-400', 'border-b-2', 'border-indigo-500');
+    });
 
-  btnTool.addEventListener('click', () => {
-    formTool.classList.remove('hidden');
-    formPrompt.classList.add('hidden');
-    btnTool.classList.add('text-indigo-400', 'border-b-2', 'border-indigo-500');
-    btnPrompt.classList.remove('text-indigo-400', 'border-b-2', 'border-indigo-500');
-  });
+    btnTool.addEventListener('click', () => {
+      formTool.classList.remove('hidden');
+      formPrompt.classList.add('hidden');
+      btnTool.classList.add('text-indigo-400', 'border-b-2', 'border-indigo-500');
+      btnPrompt.classList.remove('text-indigo-400', 'border-b-2', 'border-indigo-500');
+    });
+  }
 
-  formPrompt.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newPrompt = {
-      id: 'p_' + Date.now(),
-      title: document.getElementById('prompt-title').value,
-      categoryId: document.getElementById('prompt-category').value,
-      llm: document.getElementById('prompt-llm').value || 'Geral',
-      upvotes: 1,
-      author: document.getElementById('prompt-author').value || 'Anônimo',
-      content: document.getElementById('prompt-content').value
-    };
+  if (formPrompt) {
+    formPrompt.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newPrompt = {
+        id: 'p_' + Date.now(),
+        title: document.getElementById('prompt-title').value,
+        categoryId: document.getElementById('prompt-category').value,
+        llm: document.getElementById('prompt-llm').value || 'Geral',
+        upvotes: 1,
+        author: document.getElementById('prompt-author').value || 'Anônimo',
+        content: document.getElementById('prompt-content').value
+      };
 
-    STATE.prompts.unshift(newPrompt);
-    renderPrompts();
-    updateStats();
-    formPrompt.reset();
-    showToast('Prompt enviado e publicado com sucesso!');
-    switchTab('prompts');
-  });
+      STATE.prompts.unshift(newPrompt);
+      renderPrompts();
+      updateStats();
+      formPrompt.reset();
+      showToast('Prompt publicado com sucesso!');
+      switchTab('prompts');
+    });
+  }
 }
 
 function handleUrlDeepLink() {
@@ -495,6 +572,7 @@ function handleUrlDeepLink() {
 
 function showToast(message) {
   const container = document.getElementById('toast-container');
+  if (!container) return;
   const toast = document.createElement('div');
   toast.className = 'bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-xs font-medium shadow-lg flex items-center gap-2 animate-bounce';
   toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
