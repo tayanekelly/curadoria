@@ -19,8 +19,8 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-['Plus_Jakarta_Sans'] antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- Cabeçalho / Navegação -->
-  <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 transition-all">
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 transition-all">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         
@@ -35,7 +35,7 @@
           </div>
         </div>
 
-        <!-- Guias de navegação -->
+        <!-- Navigation Tabs (Desktop) -->
         <nav class="hidden xl:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
           <button data-tab="tools" class="nav-tab active-tab">
             <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Ferramentas
@@ -54,23 +54,48 @@
           </button>
         </nav>
 
-        <!-- Contador de estatísticas e ações -->
+        <!-- Right Side Actions & Mobile Menu Button -->
         <div class="flex items-center gap-3">
           <div class="hidden lg:flex items-center gap-4 text-xs text-slate-400 border-r border-slate-800 pr-4">
             <div><span id="stat-tools-count" class="font-semibold text-white">0</span> Ferramentas</div>
             <div><span id="stat-prompts-count" class="font-semibold text-white">0</span> Prompts</div>
           </div>
+          
           <button data-tab="submit" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-all shadow-md shadow-indigo-600/20">
             <i class="fa-solid fa-plus text-xs"></i> Colaborar
+          </button>
+
+          <!-- Botão Menu Hambúrguer (Telemóvel) -->
+          <button id="mobile-menu-btn" class="xl:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:border-indigo-500/50 transition">
+            <i id="mobile-menu-icon" class="fa-solid fa-bars text-lg"></i>
           </button>
         </div>
 
       </div>
     </div>
+
+    <!-- Menu Expansível no Telemóvel -->
+    <div id="mobile-menu" class="hidden xl:hidden bg-slate-900/95 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2">
+      <button data-tab="tools" class="mobile-nav-tab w-full text-left px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm font-medium text-slate-200 flex items-center gap-3">
+        <i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> Ferramentas IA
+      </button>
+      <button data-tab="prompts" class="mobile-nav-tab w-full text-left px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm font-medium text-slate-200 flex items-center gap-3">
+        <i class="fa-solid fa-terminal text-indigo-400"></i> Biblioteca de Prompts
+      </button>
+      <button data-tab="calculators" class="mobile-nav-tab w-full text-left px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm font-medium text-slate-200 flex items-center gap-3">
+        <i class="fa-solid fa-calculator text-indigo-400"></i> Utilitários & Calculadoras
+      </button>
+      <button data-tab="submit" class="mobile-nav-tab w-full text-left px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm font-medium text-slate-200 flex items-center gap-3">
+        <i class="fa-solid fa-circle-plus text-indigo-400"></i> Enviar Colaboração
+      </button>
+      <button data-tab="saved" class="mobile-nav-tab w-full text-left px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-sm font-medium text-slate-200 flex items-center gap-3">
+        <i class="fa-solid fa-bookmark text-indigo-400"></i> Meus Salvos
+      </button>
+    </div>
   </header>
 
-  <!-- Seção Herói -->
-  <section class="relative overflow-hidden py-12 md:py-16 border-b border-slate-800/60 bg-gradient-to-b from-indigo-950/20 via-slate-950 to-slate-950">
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden py-10 md:py-16 border-b border-slate-800/60 bg-gradient-to-b from-indigo-950/20 via-slate-950 to-slate-950">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.08),transparent_50%)]"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
@@ -82,14 +107,14 @@
           <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Curadoria de Inteligência Artificial para <span class="bg-gradient-to-r from-indigo-400 via-sky-300 to-teal-300 bg-clip-text text-transparent">Direito e Gestão Pública</span>
           </h1>
-          <p class="text-slate-400 text-base md:text-lg leading-relaxed mb-6">
+          <p class="text-slate-400 text-sm md:text-lg leading-relaxed mb-6">
             Encontre ferramentas testadas, prompts validados, calculadoras de prazos e geradores de ETP/TR estruturados.
           </p>
           <div class="flex flex-wrap gap-2 pt-2" id="quick-category-pills"></div>
         </div>
 
         <!-- Newsletter Widget -->
-        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
+        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-5 sm:p-6 shadow-xl">
           <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3">
             <i class="fa-solid fa-envelope-open-text text-sm"></i>
           </div>
@@ -106,10 +131,10 @@
     </div>
   </section>
 
-  <!-- Contêiner de visualização do aplicativo principal -->
+  <!-- Main App View Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Visualizar: Ferramentas -->
+    <!-- View: Tools -->
     <div id="view-tools" class="app-view">
       <div class="flex flex-col md:flex-row gap-4 mb-8 justify-between items-stretch md:items-center bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
         <div class="relative flex-1">
@@ -135,7 +160,7 @@
       </div>
     </div>
 
-    <!-- Visualizar: Instruções -->
+    <!-- View: Prompts -->
     <div id="view-prompts" class="app-view hidden">
       <div class="flex flex-col md:flex-row gap-4 mb-8 justify-between items-stretch md:items-center bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
         <div class="relative flex-1">
@@ -151,7 +176,7 @@
       <div id="prompts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </div>
 
-    <!-- Visualizar: Calculadoras e Utilitários -->
+    <!-- View: Calculators & Utilities -->
     <div id="view-calculators" class="app-view hidden space-y-8">
       <div>
         <h2 class="text-2xl font-bold text-white mb-2">Utilitários e Calculadoras Práticas</h2>
@@ -224,7 +249,7 @@
       </div>
     </div>
 
-    <!-- Visualizar: Itens Salvos -->
+    <!-- View: Submit Form -->
     <div id="view-submit" class="app-view hidden max-w-3xl mx-auto">
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 md:p-8">
         <h2 class="text-2xl font-bold text-white mb-2">Enviar Colaboração para a Comunidade</h2>
@@ -307,7 +332,7 @@
       </div>
     </div>
 
-    <!-- Visualizar: Itens Salvos -->
+    <!-- View: Saved Items -->
     <div id="view-saved" class="app-view hidden">
       <h2 class="text-xl font-bold text-white mb-6">Itens Marcados como Salvos</h2>
       <div id="saved-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -319,7 +344,7 @@
 
   </main>
 
-  <!-- Sistema de Notificações por Alerta -->
+  <!-- Toast Notification System -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
 
   <!-- Script Principal JS -->
