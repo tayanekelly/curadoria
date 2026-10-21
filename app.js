@@ -103,6 +103,7 @@ const STATE = {
 
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
+  setupMobileMenu();
   setupFilters();
   setupForms();
   renderAll();
@@ -113,15 +114,47 @@ function setupNavigation() {
   document.querySelectorAll('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       switchTab(btn.getAttribute('data-tab'));
+      closeMobileMenu();
     });
   });
 }
 
+function setupMobileMenu() {
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('mobile-menu-icon');
+
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        icon.className = 'fa-solid fa-xmark text-lg';
+      } else {
+        closeMobileMenu();
+      }
+    });
+  }
+}
+
+function closeMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('mobile-menu-icon');
+  if (menu && !menu.classList.contains('hidden')) {
+    menu.classList.add('hidden');
+    if (icon) icon.className = 'fa-solid fa-bars text-lg';
+  }
+}
+
 function switchTab(tab) {
   STATE.currentTab = tab;
+  
+  // Atualiza abas desktop
   document.querySelectorAll('.nav-tab').forEach(b => {
     b.classList.toggle('active-tab', b.getAttribute('data-tab') === tab);
   });
+
+  // Alterna as secções
   document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
   const activeView = document.getElementById(`view-${tab}`);
   if (activeView) activeView.classList.remove('hidden');
@@ -348,7 +381,6 @@ function renderSavedView() {
   ].join('');
 }
 
-// Calculadoras e Utilitários
 function calculateDeadline() {
   const dateInput = document.getElementById('calc-start-date').value;
   const days = parseInt(document.getElementById('calc-days-qty').value) || 0;
@@ -369,7 +401,7 @@ function calculateDeadline() {
     if (type === 'calendar') {
       addedDays++;
     } else {
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Ignorar Sábado e Domingo
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         addedDays++;
       }
     }
