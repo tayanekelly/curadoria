@@ -367,38 +367,56 @@ function renderSavedView() {
 
   if (savedTools.length === 0 && savedPrompts.length === 0) {
     container.innerHTML = '';
-    document.getElementById('saved-empty-state').classList.add('hidden'); // Ajustado
+    document.getElementById('saved-empty-state').classList.remove('hidden');
     return;
   }
-  // ... resto da renderização salva
+
+  document.getElementById('saved-empty-state').classList.add('hidden');
+  container.innerHTML = [
+    ...savedTools.map(t => `<div class="bg-slate-900 p-4 rounded-xl border border-slate-800"><h4 class="font-bold text-white">${t.name}</h4><p class="text-xs text-slate-400 mt-1">${t.desc}</p></div>`),
+    ...savedPrompts.map(p => `<div class="bg-slate-900 p-4 rounded-xl border border-slate-800"><h4 class="font-bold text-white">${p.title}</h4><p class="text-xs text-indigo-400 mt-1">Prompt</p></div>`)
+  ].join('');
 }
 
-// Configuração das IAs de Licitação e Aprimoramento
+// Configuração das IAs de Licitação com suporte a Word (.docx)
 function setupAIModules() {
-  // Módulo Licitação (ETP/TR com arquivo)
   const licForm = document.getElementById('licitacao-form');
   if (licForm) {
-    licForm.addEventListener('submit', (e) => {
+    licForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const tipo = document.getElementById('lic-tipo').value;
       const objeto = document.getElementById('lic-objeto').value;
       const necessidade = document.getElementById('lic-necessidade').value;
       const fileInput = document.getElementById('lic-file');
-      const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : null;
 
-      let referenciaTexto = fileName ? `\n[Referência Baseada no arquivo anexado pelo usuário: ${fileName}]` : '';
+      let conteudoBase = "";
 
-      const resultado = `=== MINUTA INTELIGENTE (${tipo}) - LEI Nº 14.133/2021 ===\n` +
-        `Objeto: ${objeto}\n` +
-        `Necessidade Pública: ${necessidade}` +
-        referenciaTexto + `\n\n` +
-        `1. DESCRIÇÃO DA NECESSIDADE:\nConsiderando o planejamento estratégico e a urgência operacional, justifica-se a aquisição de ${objeto} visando sanar a seguinte demanda: "${necessidade}".\n\n` +
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+          conteudoBase = result.value; // Texto extraído do Word do utilizador
+        } catch (err) {
+          console.error(err);
+          showToast('Erro ao ler o ficheiro Word.');
+          return;
+        }
+      }
+
+      let minutaFinal = `=== MINUTA INTELIGENTE (${tipo}) - LEI Nº 14.133/2021 ===\n\n`;
+      if (conteudoBase) {
+        minutaFinal += `[ADAPTADO DO MODELO ANEXADO PELO UTILIZADOR]\n\n` +
+          `--- CONTEÚDO ORIGINAL PARSEADO ---\n${conteudoBase.substring(0, 1500)}...\n----------------------------------\n\n`;
+      }
+
+      minutaFinal += `1. DESCRIÇÃO DA NECESSIDADE:\nConsiderando o planejamento estratégico, justifica-se a contratação de "${objeto}" visando sanar a seguinte demanda: "${necessidade}".\n\n` +
         `2. REQUISITOS DA CONTRATAÇÃO:\n- Atendimento estrito aos padrões de sustentabilidade e LGPD.\n- Compatibilidade com as diretrizes da Nova Lei de Licitações (Lei nº 14.133/2021).\n\n` +
         `3. ESTIMATIVA DE QUANTITATIVOS E PREÇOS:\n[Preencher com base em pesquisa de mercado conforme art. 23 da Lei 14.133/2021]`;
 
-      document.getElementById('lic-output').value = resultado;
+      document.getElementById('lic-output').value = minutaFinal;
       document.getElementById('lic-result-box').classList.remove('hidden');
-      showToast(`${tipo} gerado com sucesso com base nas diretrizes!`);
+      showToast(`${tipo} processado e gerado com sucesso!`);
     });
   }
 
@@ -431,10 +449,55 @@ function setupAIModules() {
   }
 }
 
-function copyLicitacaoResult() {
-  const text = document.getElementById('lic-output').value;
-  navigator.clipboard.writeText(text);
-  showToast('Minuta copiada!');
+// Função para gerar e descarregar o documento em Word (.docx) real
+async function downloadWordDocument() {
+  const textoGerado = document.getElementById('lic-output').value;
+  const tipoDoc = document.getElementById('lic-tipo').value;
+
+  try {
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel } = window.docx;
+
+    // Criar secções de parágrafos divididas por quebra de linha
+    const linhas = textoGerado.split('\n');
+    const paragrafos = linhas.map(linha => {
+      if (linha.startsWith('===')) {
+        return new Paragraph({
+          text: linha,
+          heading: HeadingLevel.HEADING_1,
+          spacing: { after: 200 }
+        });
+      } else if (linha.endsWith(':') || linha.match(/^[0-9]+\./)) {
+        return new Paragraph({
+          text: linha,
+          heading: HeadingLevel.HEADING_2,
+          spacing: { before: 150, after: 100 }
+        });
+      }
+      return new Paragraph({
+        children: [new TextRun(linha)],
+        spacing: { after: 120 }
+      });
+    });
+
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: paragrafos,
+      }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tipoDoc}_Lei_14133.docx`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Ficheiro Word (.docx) descarregado com sucesso!');
+  } catch (err) {
+    console.error(err);
+    showToast('Erro ao gerar o ficheiro Word.');
+  }
 }
 
 function copyAprimoradoResult() {
