@@ -14,6 +14,10 @@
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Bibliotecas para Leitura e Escrita de Ficheiros .docx -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+
   <!-- Arquivo de Estilos Customizados -->
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -120,7 +124,7 @@
             Curadoria de Inteligência Artificial para <span class="bg-gradient-to-r from-indigo-400 via-sky-300 to-teal-300 bg-clip-text text-transparent">Direito e Gestão Pública</span>
           </h1>
           <p class="text-slate-400 text-sm md:text-lg leading-relaxed mb-6">
-            Ferramentas testadas, prompts validados e geradores inteligentes para ETP, TR e polimento de peças jurídicas.
+            Ferramentas testadas, prompts validados e geradores inteligentes com suporte a upload/exportação de ficheiros Word (.docx).
           </p>
           <div class="flex flex-wrap gap-2 pt-2" id="quick-category-pills"></div>
         </div>
@@ -188,16 +192,16 @@
       <div id="prompts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </div>
 
-    <!-- View: Gerador Inteligente de ETP & TR (Lei 14.133) com Upload de Referência -->
+    <!-- View: Gerador Inteligente de ETP & TR (Lei 14.133) com Upload de .docx -->
     <div id="view-licitacao-ai" class="app-view hidden max-w-4xl mx-auto space-y-6">
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 md:p-8">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 text-xl">
-            <i class="fa-solid fa-file-invoice"></i>
+            <i class="fa-solid fa-file-word"></i>
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-white">Gerador Inteligente de ETP & TR</h2>
-            <p class="text-slate-400 text-sm">Crie instruções processuais alinhadas à Lei nº 14.133/2021 ou baseadas no seu modelo em PDF/foto.</p>
+            <h2 class="text-2xl font-bold text-white">Gerador & Editor de ETP & TR (Word)</h2>
+            <p class="text-slate-400 text-sm">Carregue um modelo em formato Word (.docx), adapte com IA e transfira o ficheiro modificado.</p>
           </div>
         </div>
 
@@ -211,35 +215,35 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Anexar Modelo Anterior (PDF / Imagem)</label>
-              <input type="file" id="lic-file" accept=".pdf,image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-600 file:text-white hover:file:bg-teal-500" />
+              <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Anexar Modelo Word (.docx)</label>
+              <input type="file" id="lic-file" accept=".docx" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-600 file:text-white hover:file:bg-teal-500" />
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Objeto da Contratação *</label>
-            <input type="text" id="lic-objeto" required placeholder="Ex: Contratação de serviço especializado de manutenção predial" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-teal-500" />
+            <input type="text" id="lic-objeto" required placeholder="Ex: Contratação de serviço especializado de manutenção" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-teal-500" />
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Necessidade / Problema Público a Resolver *</label>
-            <textarea id="lic-necessidade" required rows="3" placeholder="Descreva o contexto, falhas atuais ou a demanda que justifica a contratação..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-teal-500"></textarea>
+            <textarea id="lic-necessidade" required rows="3" placeholder="Descreva a demanda que justifica a contratação..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-teal-500"></textarea>
           </div>
 
           <button type="submit" class="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-sm font-semibold transition shadow-lg shadow-teal-600/20 flex items-center justify-center gap-2">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Estrutura Customizada (Lei 14.133)
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Processar Ficheiro Word & Gerar Minuta
           </button>
         </form>
 
-        <!-- Caixa de Resultado -->
-        <div id="lic-result-box" class="hidden mt-6 pt-6 border-t border-slate-800">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-sm font-bold text-teal-300">Minuta Gerada / Prompt Especialista:</h3>
-            <button onclick="copyLicitacaoResult()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg transition flex items-center gap-1.5">
-              <i class="fa-solid fa-copy"></i> Copiar
+        <!-- Caixa de Resultado com pré-visualização editável e download -->
+        <div id="lic-result-box" class="hidden mt-6 pt-6 border-t border-slate-800 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-teal-300">Pré-visualização do Conteúdo (Pode editar antes de transferir):</h3>
+            <button onclick="downloadWordDocument()" class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2 shadow-lg shadow-teal-600/20">
+              <i class="fa-solid fa-download"></i> Descarregar Ficheiro .docx Modificado
             </button>
           </div>
-          <textarea id="lic-output" readonly rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 focus:outline-none"></textarea>
+          <textarea id="lic-output" rows="10" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-teal-500"></textarea>
         </div>
       </div>
     </div>
